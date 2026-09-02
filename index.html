@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>flyday.me</title>
+  
+  <!-- Favicon з іконкою fd -->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+
+  <style>
+    * { 
+      margin: 0; 
+      padding: 0; 
+      box-sizing: border-box; 
+    }
+
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0B1120;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+      font-weight: 700;
+      color: #F1F5F9;
+    }
+
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      display: block;
+    }
+
+    .logo-container {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+
+    .logo {
+      font-size: clamp(3rem, 12vw, 8rem);
+      letter-spacing: -0.03em;
+      line-height: 1;
+      text-align: center;
+      user-select: none;
+      transform: skewX(-4deg);
+      display: flex;
+      align-items: baseline;
+    }
+
+    .day { 
+      color: #F97316;
+      text-shadow: 0 0 20px rgba(249, 115, 22, 0.2);
+    }
+
+    .dotme { 
+      color: #64748B; 
+      font-weight: 300; 
+      font-size: 0.55em; 
+      display: inline-block;
+      margin-left: 0.05em;
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="radarCanvas"></canvas>
+
+  <div class="logo-container">
+    <div class="logo">
+      fly<span class="day">day</span><span class="dotme">.me</span>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('radarCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
+
+    const planeImage = new Image();
+    planeImage.src = 'plane.svg';
+
+    class Plane {
+      constructor(altitudeLevel) {
+        this.altitude = altitudeLevel; 
+        this.angle = Math.random() * Math.PI * 2; 
+
+        this.speed = 0.5 + this.altitude * 0.4;
+        this.size = 14 + this.altitude * 4; 
+        
+        this.opacity = 0.3 + (this.altitude / 3) * 0.5;
+        this.isWhite = Math.random() > 0.3;
+
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
+      }
+
+      update() {
+        this.x += Math.cos(this.angle) * this.speed;
+        this.y += Math.sin(this.angle) * this.speed;
+
+        const buffer = 60;
+        if (this.x < -buffer) this.x = width + buffer;
+        if (this.x > width + buffer) this.x = -buffer;
+        if (this.y < -buffer) this.y = height + buffer;
+        if (this.y > height + buffer) this.y = -buffer;
+      }
+
+      draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.angle + Math.PI / 2);
+
+        ctx.globalAlpha = this.opacity;
+
+        if (!this.isWhite) {
+          ctx.filter = 'brightness(0.2)';
+        }
+
+        ctx.drawImage(
+          planeImage,
+          -this.size / 2,
+          -this.size / 2,
+          this.size,
+          this.size
+        );
+
+        ctx.restore();
+      }
+    }
+
+    const planes = [];
+    const TOTAL_PLANES = 30;
+
+    planeImage.onload = () => {
+      for (let i = 0; i < TOTAL_PLANES; i++) {
+        const altitude = (i % 3) + 1;
+        planes.push(new Plane(altitude));
+      }
+
+      planes.sort((a, b) => a.altitude - b.altitude);
+      animate();
+    };
+
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+
+      planes.forEach(plane => {
+        plane.update();
+        plane.draw();
+      });
+
+      requestAnimationFrame(animate);
+    }
+  </script>
+
+</body>
+</html>

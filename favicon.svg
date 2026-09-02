@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Темно-синє фонове закруглене вікно -->
+  <rect width="64" height="64" rx="14" fill="#0B1120"/>
+  
+  <g transform="skewX(-6)">
+    <!-- Біла літера f (fly) -->
+    <text x="10" y="45" 
+          font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', Roboto, sans-serif" 
+          font-weight="800" 
+          font-size="36" 
+          fill="#F1F5F9">f</text>
+          
+    <!-- Помаранчева літера d (day) -->
+    <text x="28" y="45" 
+          font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', Roboto, sans-serif" 
+          font-weight="800" 
+          font-size="36" 
+          fill="#F97316">d</text>
+  </g>
+</svg>
