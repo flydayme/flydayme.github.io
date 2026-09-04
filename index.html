@@ -1,1152 +1,174 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="theme-color" content="#0B1120" />
-    <title>Flyday.me — Weekend Escape</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>flyday.me</title>
+  
+  <!-- Favicon з іконкою fd -->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
 
-    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    * { 
+      margin: 0; 
+      padding: 0; 
+      box-sizing: border-box; 
+    }
 
-    <style>
-        /* Темна тема */
-        :root {
-            --space-4: 4px;
-            --space-8: 8px;
-            --space-12: 12px;
-            --space-16: 16px;
-            --space-20: 20px;
-            --space-24: 24px;
-            --space-32: 32px;
-            --space-48: 48px;
-            --space-64: 64px;
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0B1120;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+      font-weight: 700;
+      color: #F1F5F9;
+    }
 
-            --bg-primary: #0B1120;
-            --bg-secondary: #131B2E;
-            --bg-card: #1E293B;
-            --bg-card-hover: #26334D;
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      display: block;
+    }
 
-            --text-primary: #F8FAFC;
-            --text-secondary: #CBD5E1;
-            --text-muted: #94A3B8;
+    .logo-container {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
 
-            --accent-orange: #F97316;
-            --accent-orange-hover: #EA580C;
+    .logo {
+      font-size: clamp(3rem, 12vw, 8rem);
+      letter-spacing: -0.03em;
+      line-height: 1;
+      text-align: center;
+      user-select: none;
+      transform: skewX(-4deg);
+      display: flex;
+      align-items: baseline;
+    }
 
-            --slider-track: rgba(255, 255, 255, 0.15);
+    .day { 
+      color: #F97316;
+      text-shadow: 0 0 20px rgba(249, 115, 22, 0.2);
+    }
 
-            --border-color: rgba(255, 255, 255, 0.12);
-            --border-color-hover: rgba(249, 115, 22, 0.5);
-
-            --radius-card: 16px;
-            --radius-button: 12px;
-            --radius-pill: 9999px;
-
-            --glass-blur: blur(20px);
-            --glass-bg: rgba(11, 17, 32, 0.85);
-
-            --touch-min: 44px;
-            --touch-ideal: 48px;
-
-            --font-system: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-            --font-mono: 'Fira Code', monospace;
-
-            --fs-h1: 28px;
-            --lh-h1: 34px;
-            --fs-h2: 22px;
-            --lh-h2: 28px;
-            --fs-body: 17px;
-            --lh-body: 24px;
-            --fs-caption: 13px;
-            --lh-caption: 18px;
-            --fs-button: 16px;
-        }
-
-        /* Світла тема */
-        [data-theme="light"] {
-            --bg-primary: #F1F5F9;
-            --bg-secondary: #E2E8F0;
-            --bg-card: #FFFFFF;
-            --bg-card-hover: #F8FAFC;
-
-            --text-primary: #0F172A;
-            --text-secondary: #334155;
-            --text-muted: #64748B;
-
-            --slider-track: rgba(0, 0, 0, 0.12);
-
-            --border-color: rgba(0, 0, 0, 0.1);
-            --border-color-hover: rgba(249, 115, 22, 0.5);
-
-            --glass-bg: rgba(241, 245, 249, 0.85);
-        }
-
-        *, *::before, *::after {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html {
-            -webkit-text-size-adjust: 100%;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            font-family: var(--font-system);
-            font-size: var(--fs-body);
-            line-height: var(--lh-body);
-            color: var(--text-primary);
-            background: var(--bg-primary);
-            min-height: 100vh;
-            min-height: 100dvh;
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
-            position: relative;
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-
-        #radarCanvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        .main-wrapper {
-            position: relative;
-            z-index: 1;
-        }
-
-        .header {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            background: var(--glass-bg);
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            border-bottom: 1px solid var(--border-color);
-            padding: var(--space-12) var(--space-16);
-            transition: background 0.3s, border-color 0.3s;
-        }
-
-        .header-inner {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .logo {
-            font-size: 24px;
-            font-weight: 700;
-            letter-spacing: -0.03em;
-            color: var(--text-primary);
-            display: flex;
-            align-items: baseline;
-            text-decoration: none;
-            transform: skewX(-4deg);
-            user-select: none;
-        }
-        .logo .day { color: var(--accent-orange); }
-        .logo .dotme {
-            color: var(--text-secondary);
-            font-weight: 300;
-            font-size: 0.55em;
-            margin-left: 0.05em;
-        }
-
-        /* Перемикач теми */
-        .theme-toggle {
-            background: transparent;
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-pill);
-            padding: 6px 14px;
-            color: var(--text-primary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-            font-weight: 500;
-            font-family: var(--font-system);
-            transition: all 0.2s ease;
-        }
-        .theme-toggle:hover {
-            border-color: var(--accent-orange);
-            color: var(--accent-orange);
-        }
-        .theme-icon-svg {
-            width: 18px;
-            height: 18px;
-            display: block;
-            flex-shrink: 0;
-        }
-
-        .hero {
-            max-width: 680px;
-            margin: 0 auto;
-            padding: var(--space-48) var(--space-16) var(--space-32);
-            text-align: center;
-        }
-
-        .hero h1 {
-            font-size: var(--fs-h1);
-            font-weight: 700;
-            line-height: var(--lh-h1);
-            letter-spacing: -0.02em;
-            margin-bottom: var(--space-8);
-        }
-        .hero h1 .highlight { color: var(--accent-orange); }
-
-        .hero p {
-            font-size: var(--fs-body);
-            color: var(--text-secondary);
-            margin-bottom: var(--space-32);
-        }
-
-        .search-panel {
-            background: var(--glass-bg);
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-card);
-            padding: var(--space-24);
-            display: flex;
-            flex-direction: column;
-            gap: var(--space-20);
-            text-align: left;
-            transition: background 0.3s, border-color 0.3s;
-        }
-
-        .form-group {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            gap: var(--space-8);
-        }
-
-        .label-with-icon {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: var(--fs-caption);
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            color: var(--text-muted);
-        }
-
-        .label-icon {
-            width: 16px;
-            height: 16px;
-            stroke: var(--text-muted);
-            flex-shrink: 0;
-        }
-
-        .origin-input {
-            width: 100%;
-            min-height: var(--touch-ideal);
-            background: var(--bg-primary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-button);
-            padding: 0 var(--space-16);
-            color: var(--text-primary);
-            font-family: var(--font-system);
-            font-size: 16px;
-            font-weight: 500;
-            outline: none;
-            transition: border-color 0.2s, background-color 0.3s;
-        }
-        .origin-input:focus { border-color: var(--accent-orange); }
-        .origin-input::placeholder { color: var(--text-muted); font-weight: 400; }
-
-        .autocomplete-dropdown {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            z-index: 50;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-button);
-            margin-top: 4px;
-            max-height: 200px;
-            overflow-y: auto;
-            display: none;
-        }
-        .autocomplete-dropdown.active { display: block; }
-        .autocomplete-item {
-            padding: 10px 16px;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border-color);
-            transition: background 0.15s;
-        }
-        .autocomplete-item:last-child { border-bottom: none; }
-        .autocomplete-item:hover { background: var(--bg-card-hover); }
-        .autocomplete-item .city-name { font-size: 15px; color: var(--text-primary); font-weight: 500; }
-        .autocomplete-item .iata-code {
-            font-family: var(--font-mono);
-            font-size: 13px;
-            color: var(--accent-orange);
-            font-weight: 600;
-            background: rgba(249, 115, 22, 0.1);
-            padding: 2px 6px;
-            border-radius: 4px;
-        }
-
-        .price-display {
-            font-family: var(--font-mono);
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--accent-orange);
-            letter-spacing: -0.01em;
-            display: flex;
-            align-items: baseline;
-            gap: 6px;
-        }
-        .price-display span {
-            font-size: var(--fs-body);
-            font-weight: 500;
-            color: var(--text-secondary);
-            font-family: var(--font-system);
-        }
-
-        .slider-container {
-            position: relative;
-            width: 100%;
-            padding: 8px 0;
-        }
-
-        .price-slider {
-            width: 100%;
-            height: 6px;
-            border-radius: 3px;
-            background: var(--slider-track);
-            outline: none;
-            -webkit-appearance: none;
-            appearance: none;
-            cursor: pointer;
-            margin: 0;
-            border: none;
-            box-shadow: none;
-            transition: background 0.3s;
-        }
-
-        .price-slider::-webkit-slider-runnable-track {
-            width: 100%;
-            height: 6px;
-            background: var(--slider-track);
-            border-radius: 3px;
-            border: none;
-            box-shadow: none;
-        }
-
-        .price-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 22px;
-            height: 22px;
-            border-radius: 50%;
-            background: var(--accent-orange);
-            cursor: pointer;
-            margin-top: -8px;
-            border: none;
-            box-shadow: none;
-            transition: transform 0.15s;
-        }
-        .price-slider::-webkit-slider-thumb:hover { transform: scale(1.15); }
-
-        .price-slider::-moz-range-track {
-            width: 100%;
-            height: 6px;
-            background: var(--slider-track);
-            border-radius: 3px;
-            border: none;
-            box-shadow: none;
-        }
-
-        .price-slider::-moz-range-thumb {
-            width: 22px;
-            height: 22px;
-            border: none;
-            border-radius: 50%;
-            background: var(--accent-orange);
-            cursor: pointer;
-            box-shadow: none;
-            transition: transform 0.15s;
-        }
-        .price-slider::-moz-range-thumb:hover { transform: scale(1.15); }
-
-        .slider-labels {
-            display: flex;
-            justify-content: space-between;
-            margin-top: var(--space-8);
-            font-family: var(--font-mono);
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--text-secondary);
-        }
-
-        .cta-button {
-            width: 100%;
-            min-height: var(--touch-ideal);
-            padding: 0 var(--space-24);
-            background: var(--accent-orange);
-            border: none;
-            border-radius: var(--radius-pill);
-            color: #FFFFFF;
-            font-family: var(--font-system);
-            font-size: var(--fs-button);
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s ease, transform 0.1s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: var(--space-8);
-        }
-        .cta-button:hover { background: var(--accent-orange-hover); }
-        .cta-button:active { transform: scale(0.98); }
-
-        /* Адаптивний спінер Flyday.me */
-        .spinner {
-            width: 40px;
-            height: 12px;
-            position: relative;
-            display: inline-block;
-        }
-
-        .spinner::before,
-        .spinner::after {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: var(--accent-orange);
-            animation: chase 1.2s ease-in-out infinite;
-        }
-
-        .spinner::after {
-            animation-delay: -0.6s;
-            background: var(--text-primary);
-            opacity: 0.6;
-        }
-
-        @keyframes chase {
-            0%, 100% { transform: translateX(0); }
-            50% { transform: translateX(28px); }
-        }
-
-        .results-section {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 var(--space-16) var(--space-64);
-        }
-
-        .results-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: var(--space-8);
-            margin-bottom: var(--space-20);
-        }
-        .results-header h2 { font-size: var(--fs-h2); font-weight: 600; color: var(--text-primary); }
-        .results-header .date-info {
-            font-family: var(--font-mono);
-            font-size: var(--fs-caption);
-            color: var(--text-muted);
-        }
-
-        .cards-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: var(--space-16);
-        }
-        @media (min-width: 640px) { .cards-grid { grid-template-columns: repeat(2, 1fr); gap: var(--space-20); } }
-        @media (min-width: 1024px) { .cards-grid { grid-template-columns: repeat(3, 1fr); gap: var(--space-20); } }
-
-        .flight-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-card);
-            padding: var(--space-20);
-            transition: all 0.25s ease;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            gap: var(--space-12);
-        }
-        .flight-card:hover {
-            background: var(--bg-card-hover);
-            border-color: var(--border-color-hover);
-            transform: translateY(-4px);
-        }
-
-        .hot-deal {
-            position: absolute;
-            top: var(--space-16);
-            right: var(--space-16);
-            background: var(--accent-orange);
-            color: #FFFFFF;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            padding: 4px 10px;
-            border-radius: var(--radius-pill);
-            line-height: 1;
-        }
-
-        .card-top {
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            gap: var(--space-16);
-        }
-
-        .destination-code {
-            font-family: var(--font-mono);
-            font-size: 32px;
-            font-weight: 700;
-            color: var(--text-primary);
-            line-height: 1;
-        }
-
-        .destination-info {
-            display: flex;
-            flex-direction: column;
-            text-align: left;
-        }
-        .destination-city { font-size: 16px; font-weight: 600; color: var(--text-primary); }
-        .destination-country { font-size: var(--fs-caption); color: var(--text-muted); text-transform: uppercase; }
-
-        .card-timings {
-            display: flex;
-            flex-direction: column;
-            gap: var(--space-8);
-            padding: var(--space-12) var(--space-16);
-            background: var(--bg-secondary);
-            border-radius: var(--radius-button);
-        }
-        .timing-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: var(--fs-caption);
-        }
-        .timing-label { color: var(--text-muted); font-weight: 500; text-transform: uppercase; font-size: 11px; }
-        .timing-value { font-family: var(--font-mono); color: var(--text-secondary); font-weight: 500; }
-
-        .card-bottom {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .airline-name { font-size: var(--fs-caption); color: var(--text-secondary); font-weight: 500; }
-        .price-tag {
-            font-family: var(--font-mono);
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--accent-orange);
-            display: flex;
-            align-items: baseline;
-            gap: 4px;
-        }
-        .price-tag .roundtrip { font-size: 12px; color: var(--text-muted); font-family: var(--font-system); font-weight: 400; }
-
-        .book-button {
-            width: 100%;
-            min-height: var(--touch-min);
-            background: transparent;
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-pill);
-            color: var(--text-primary);
-            font-size: var(--fs-button);
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        .book-button:hover {
-            background: var(--accent-orange);
-            color: #FFFFFF;
-            border-color: var(--accent-orange);
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: var(--space-48) var(--space-24);
-            grid-column: 1 / -1;
-        }
-        .empty-state h3 { font-size: var(--fs-h2); font-weight: 600; margin-bottom: var(--space-8); }
-        .empty-state p { font-size: var(--fs-body); color: var(--text-secondary); }
-
-        .footer {
-            text-align: center;
-            padding: var(--space-24) var(--space-16);
-            color: var(--text-muted);
-            font-size: var(--fs-caption);
-            border-top: 1px solid var(--border-color);
-            background: var(--bg-primary);
-            transition: background 0.3s, border-color 0.3s;
-        }
-        .footer a { color: var(--text-secondary); text-decoration: none; }
-        .footer a:hover { color: var(--accent-orange); }
-    </style>
+    .dotme { 
+      color: #64748B; 
+      font-weight: 300; 
+      font-size: 0.55em; 
+      display: inline-block;
+      margin-left: 0.05em;
+    }
+  </style>
 </head>
 <body>
 
-    <canvas id="radarCanvas"></canvas>
+  <canvas id="radarCanvas"></canvas>
 
-    <div class="main-wrapper">
-        <header class="header">
-            <div class="header-inner">
-                <a href="#" class="logo" aria-label="Flyday.me home">
-                    fly<span class="day">day</span><span class="dotme">.me</span>
-                </a>
-                <div class="header-actions">
-                    <button class="theme-toggle" id="themeToggleBtn">
-                        <span id="themeIcon">
-                            <!-- Акуратне сонце -->
-                            <svg class="theme-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="12" cy="12" r="4"></circle>
-                                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M18.66 4.93l-1.41 1.41"></path>
-                            </svg>
-                        </span>
-                        <span id="themeText">Light</span>
-                    </button>
-                </div>
-            </div>
-        </header>
-
-        <section class="hero">
-            <h1 id="heroTitle">Escape <span class="highlight">This Weekend</span></h1>
-            <p id="heroSub">Find the cheapest round-trip flights from your city for Friday &mdash; Sunday</p>
-
-            <div class="search-panel">
-                <div class="form-group">
-                    <label for="originInput" class="label-with-icon" id="labelOrigin">
-                        <svg class="label-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.7 5.2c.3.4.8.5 1.3.3l.5-.3c.4-.2.6-.6.5-1.1z"/>
-                        </svg>
-                        Departure City
-                    </label>
-                    <input type="text"
-                           id="originInput"
-                           class="origin-input"
-                           placeholder="Type city (e.g. Berlin, London)"
-                           value="Berlin (BER)"
-                           autocomplete="off"
-                           spellcheck="false" />
-                    <div class="autocomplete-dropdown" id="autocompleteDropdown"></div>
-                </div>
-
-                <div class="form-group">
-                    <label for="priceSlider" class="label-with-icon" id="labelBudget">
-                        <svg class="label-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect width="20" height="12" x="2" y="6" rx="2"/>
-                            <circle cx="12" cy="12" r="2"/>
-                            <path d="M6 12h.01M18 12h.01"/>
-                        </svg>
-                        Maximum Budget
-                    </label>
-                    <div class="price-display" id="priceDisplay">€120 <span id="roundTripText">round-trip</span></div>
-                    <div class="slider-container">
-                        <input type="range"
-                               class="price-slider"
-                               id="priceSlider"
-                               min="50"
-                               max="300"
-                               step="10"
-                               value="120"
-                               aria-label="Maximum budget" />
-                        <div class="slider-labels">
-                            <span>€50</span>
-                            <span>€300</span>
-                        </div>
-                    </div>
-                </div>
-
-                <button class="cta-button" id="searchBtn">
-                    <span id="searchBtnText">Find Weekend Escapes</span>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                </button>
-            </div>
-        </section>
-
-        <section class="results-section">
-            <div class="results-header">
-                <h2 id="resultsTitle">Weekend Escapes</h2>
-                <div class="date-info" id="dateInfo">2026-09-11 → 2026-09-13 · BER</div>
-            </div>
-
-            <div class="cards-grid" id="cardsGrid"></div>
-        </section>
-
-        <footer class="footer">
-            Flyday.me &middot; European Weekend Flight Finder
-            <span style="margin: 0 8px;">&middot;</span>
-            <a href="#">Privacy</a>
-            <span style="margin: 0 8px;">&middot;</span>
-            <a href="#">Terms</a>
-        </footer>
+  <div class="logo-container">
+    <div class="logo">
+      fly<span class="day">day</span><span class="dotme">.me</span>
     </div>
+  </div>
 
-    <!-- Анімація Canvas -->
-    <script>
-        (function() {
-            const canvas = document.getElementById('radarCanvas');
-            const ctx = canvas.getContext('2d');
+  <script>
+    const canvas = document.getElementById('radarCanvas');
+    const ctx = canvas.getContext('2d');
 
-            let width = canvas.width = window.innerWidth;
-            let height = canvas.height = window.innerHeight;
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
 
-            window.addEventListener('resize', () => {
-                width = canvas.width = window.innerWidth;
-                height = canvas.height = window.innerHeight;
-            });
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
 
-            // Завантажуємо два зображення: для темної та світлої теми
-            const planeDark = new Image();
-            planeDark.src = 'plane.svg';
+    const planeImage = new Image();
+    planeImage.src = 'plane.svg';
 
-            const planeLight = new Image();
-            planeLight.src = 'plane_black.svg';
+    class Plane {
+      constructor(altitudeLevel) {
+        this.altitude = altitudeLevel; 
+        this.angle = Math.random() * Math.PI * 2; 
 
-            class Plane {
-                constructor(altitudeLevel) {
-                    this.altitude = altitudeLevel;
-                    this.angle = Math.random() * Math.PI * 2;
-                    this.speed = 0.5 + this.altitude * 0.4;
-                    this.size = 14 + this.altitude * 4;
-                    this.opacity = 0.2 + (this.altitude / 3) * 0.3;
+        this.speed = 0.5 + this.altitude * 0.4;
+        this.size = 14 + this.altitude * 4; 
+        
+        this.opacity = 0.3 + (this.altitude / 3) * 0.5;
+        this.isWhite = Math.random() > 0.3;
 
-                    this.x = Math.random() * width;
-                    this.y = Math.random() * height;
-                }
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
+      }
 
-                update() {
-                    this.x += Math.cos(this.angle) * this.speed;
-                    this.y += Math.sin(this.angle) * this.speed;
+      update() {
+        this.x += Math.cos(this.angle) * this.speed;
+        this.y += Math.sin(this.angle) * this.speed;
 
-                    const buffer = 60;
-                    if (this.x < -buffer) this.x = width + buffer;
-                    if (this.x > width + buffer) this.x = -buffer;
-                    if (this.y < -buffer) this.y = height + buffer;
-                    if (this.y > height + buffer) this.y = -buffer;
-                }
+        const buffer = 60;
+        if (this.x < -buffer) this.x = width + buffer;
+        if (this.x > width + buffer) this.x = -buffer;
+        if (this.y < -buffer) this.y = height + buffer;
+        if (this.y > height + buffer) this.y = -buffer;
+      }
 
-                draw() {
-                    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
-                    const img = isLight ? planeLight : planeDark;
+      draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.angle + Math.PI / 2);
 
-                    // Якщо зображення ще не завантажене – пропускаємо малювання
-                    if (!img.complete || img.naturalWidth === 0) return;
+        ctx.globalAlpha = this.opacity;
 
-                    ctx.save();
-                    ctx.translate(this.x, this.y);
-                    ctx.rotate(this.angle + Math.PI / 2);
+        if (!this.isWhite) {
+          ctx.filter = 'brightness(0.2)';
+        }
 
-                    ctx.globalAlpha = this.opacity;
-                    ctx.drawImage(
-                        img,
-                        -this.size / 2,
-                        -this.size / 2,
-                        this.size,
-                        this.size
-                    );
+        ctx.drawImage(
+          planeImage,
+          -this.size / 2,
+          -this.size / 2,
+          this.size,
+          this.size
+        );
 
-                    ctx.restore();
-                }
-            }
+        ctx.restore();
+      }
+    }
 
-            const planes = [];
-            const TOTAL_PLANES = 10;
+    const planes = [];
+    const TOTAL_PLANES = 30;
 
-            // Чекаємо завантаження хоча б одного зображення, але краще дочекатися обох
-            let loaded = 0;
-            function onImageLoad() {
-                loaded++;
-                if (loaded === 2) {
-                    for (let i = 0; i < TOTAL_PLANES; i++) {
-                        const altitude = (i % 3) + 1;
-                        planes.push(new Plane(altitude));
-                    }
-                    planes.sort((a, b) => a.altitude - b.altitude);
-                    animate();
-                }
-            }
+    planeImage.onload = () => {
+      for (let i = 0; i < TOTAL_PLANES; i++) {
+        const altitude = (i % 3) + 1;
+        planes.push(new Plane(altitude));
+      }
 
-            planeDark.onload = onImageLoad;
-            planeLight.onload = onImageLoad;
+      planes.sort((a, b) => a.altitude - b.altitude);
+      animate();
+    };
 
-            // Якщо зображення вже завантажені (кеш) – викликаємо onload одразу
-            if (planeDark.complete) onImageLoad();
-            if (planeLight.complete) onImageLoad();
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
 
-            function animate() {
-                ctx.clearRect(0, 0, width, height);
-                planes.forEach(plane => {
-                    plane.update();
-                    plane.draw();
-                });
-                requestAnimationFrame(animate);
-            }
-        })();
-    </script>
+      planes.forEach(plane => {
+        plane.update();
+        plane.draw();
+      });
 
-    <!-- Логіка перемикача та інтерфейсу -->
-    <script>
-        (function() {
-            'use strict';
+      requestAnimationFrame(animate);
+    }
+  </script>
 
-            const themeToggleBtn = document.getElementById('themeToggleBtn');
-            const themeIcon = document.getElementById('themeIcon');
-            const themeText = document.getElementById('themeText');
-
-            const sunSvg = `
-            <svg class="theme-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="4"></circle>
-                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M18.66 4.93l-1.41 1.41"></path>
-            </svg>`;
-
-            const moonSvg = `
-            <svg class="theme-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
-            </svg>`;
-
-            function setTheme(theme) {
-                if (theme === 'light') {
-                    document.documentElement.setAttribute('data-theme', 'light');
-                    themeIcon.innerHTML = moonSvg;
-                    themeText.textContent = 'Dark';
-                } else {
-                    document.documentElement.removeAttribute('data-theme');
-                    themeIcon.innerHTML = sunSvg;
-                    themeText.textContent = 'Light';
-                }
-            }
-
-            themeToggleBtn.addEventListener('click', () => {
-                const currentTheme = document.documentElement.getAttribute('data-theme');
-                setTheme(currentTheme === 'light' ? 'dark' : 'light');
-            });
-
-            const i18n = {
-                en: {
-                    titleHighlight: "This Weekend",
-                    heroTitle: "Escape ",
-                    heroSub: "Find the cheapest round-trip flights from your city for Friday — Sunday",
-                    departureCity: "Departure City",
-                    placeholderCity: "Type city (e.g. Berlin, London)",
-                    maxBudget: "Maximum Budget",
-                    roundTrip: "round-trip",
-                    findBtn: "Find Weekend Escapes",
-                    resultsTitle: "Weekend Escapes",
-                    outbound: "Outbound",
-                    return: "Return",
-                    bookBtn: "Book Weekend →",
-                    hotDeal: "Hot Deal",
-                    noFlights: "No flights found",
-                    noFlightsDesc: "We couldn't find any weekend escapes within your budget from this city."
-                },
-                de: {
-                    titleHighlight: "dieses Wochenende",
-                    heroTitle: "Entfliehe ",
-                    heroSub: "Finde die günstigsten Hin- und Rückflüge von deiner Stadt für Freitag — Sonntag",
-                    departureCity: "Abflugort",
-                    placeholderCity: "Stadt eingeben (z.B. Berlin, München)",
-                    maxBudget: "Maximales Budget",
-                    roundTrip: "Hin- und Rückflug",
-                    findBtn: "Wochenendtrips finden",
-                    resultsTitle: "Wochenendtrips",
-                    outbound: "Hinflug",
-                    return: "Rückflug",
-                    bookBtn: "Wochenende buchen →",
-                    hotDeal: "Top Angebot",
-                    noFlights: "Keine Flüge gefunden",
-                    noFlightsDesc: "Wir konnten für dieses Budget keine Flüge aus dieser Stadt finden."
-                },
-                fr: {
-                    titleHighlight: "ce week-end",
-                    heroTitle: "Échappez-vous ",
-                    heroSub: "Trouvez les vols aller-retour les moins chers depuis votre ville du vendredi au dimanche",
-                    departureCity: "Ville de départ",
-                    placeholderCity: "Entrez une ville (ex. Paris, Lyon)",
-                    maxBudget: "Budget maximum",
-                    roundTrip: "aller-retour",
-                    findBtn: "Trouver des séjours",
-                    resultsTitle: "Offres du week-end",
-                    outbound: "Aller",
-                    return: "Retour",
-                    bookBtn: "Réserver →",
-                    hotDeal: "Super Offre",
-                    noFlights: "Aucun vol trouvé",
-                    noFlightsDesc: "Aucun vol trouvé dans votre budget depuis cette ville."
-                },
-                es: {
-                    titleHighlight: "este fin de semana",
-                    heroTitle: "Escápate ",
-                    heroSub: "Encuentra los vuelos de ida y vuelta más baratos desde tu ciudad de viernes a domingo",
-                    departureCity: "Ciudad de salida",
-                    placeholderCity: "Escribe una ciudad (ej. Madrid, Barcelona)",
-                    maxBudget: "Presupuesto máximo",
-                    roundTrip: "ida y vuelta",
-                    findBtn: "Buscar escapadas",
-                    resultsTitle: "Escapadas de fin de semana",
-                    outbound: "Ida",
-                    return: "Vuelta",
-                    bookBtn: "Reservar →",
-                    hotDeal: "Chollo",
-                    noFlights: "No se encontraron vuelos",
-                    noFlightsDesc: "No encontramos escapadas dentro de tu presupuesto desde esta ciudad."
-                },
-                it: {
-                    titleHighlight: "questo weekend",
-                    heroTitle: "Fuggi ",
-                    heroSub: "Trova i voli di andata e ritorno più economici dalla tua città da venerdì a domenica",
-                    departureCity: "Città di partenza",
-                    placeholderCity: "Inserisci città (es. Roma, Milano)",
-                    maxBudget: "Budget massimo",
-                    roundTrip: "andata e ritorno",
-                    findBtn: "Trova offerte weekend",
-                    resultsTitle: "Fughe del weekend",
-                    outbound: "Andata",
-                    return: "Ritorno",
-                    bookBtn: "Prenota ora →",
-                    hotDeal: "Offerta Top",
-                    noFlights: "Nessun volo trovato",
-                    noFlightsDesc: "Nessuna offerta trovata per il tuo budget da questa città."
-                },
-                pl: {
-                    titleHighlight: "w ten weekend",
-                    heroTitle: "Wyleć ",
-                    heroSub: "Znajdź najtańsze loty w obie strony z Twojego miasta od piątku do niedzieli",
-                    departureCity: "Miasto wylotu",
-                    placeholderCity: "Wpisz miasto (np. Warszawa, Kraków)",
-                    maxBudget: "Maksymalny budżet",
-                    roundTrip: "w obie strony",
-                    findBtn: "Szukaj wyjazdów",
-                    resultsTitle: "Oferty na weekend",
-                    outbound: "Wylot",
-                    return: "Powrót",
-                    bookBtn: "Zarezerwuj →",
-                    hotDeal: "Gorąca oferta",
-                    noFlights: "Nie znaleziono lotów",
-                    noFlightsDesc: "Nie znaleźliśmy lotów w wybranym budżecie z tego miasta."
-                }
-            };
-
-            const userLang = (navigator.language || navigator.userLanguage || 'en').slice(0, 2).toLowerCase();
-            const lang = i18n[userLang] ? userLang : 'en';
-            const t = i18n[lang];
-
-            document.getElementById('heroTitle').innerHTML = `${t.heroTitle}<span class="highlight">${t.titleHighlight}</span>`;
-            document.getElementById('heroSub').textContent = t.heroSub;
-            
-            const labelOrigin = document.getElementById('labelOrigin');
-            labelOrigin.childNodes[2].textContent = ` ${t.departureCity}`;
-
-            const labelBudget = document.getElementById('labelBudget');
-            labelBudget.childNodes[2].textContent = ` ${t.maxBudget}`;
-
-            const originInput = document.getElementById('originInput');
-            originInput.placeholder = t.placeholderCity;
-
-            document.getElementById('searchBtnText').textContent = t.findBtn;
-
-            const airportsDatabase = [
-                { city: 'Berlin', country: 'Germany', name: 'Brandenburg', code: 'BER' },
-                { city: 'London', country: 'United Kingdom', name: 'All Airports', code: 'LON' },
-                { city: 'Warsaw', country: 'Poland', name: 'Chopin', code: 'WAW' },
-                { city: 'Paris', country: 'France', name: 'Charles de Gaulle', code: 'CDG' },
-                { city: 'Prague', country: 'Czech Republic', name: 'Václav Havel', code: 'PRG' },
-                { city: 'Amsterdam', country: 'Netherlands', name: 'Schiphol', code: 'AMS' },
-                { city: 'Rome', country: 'Italy', name: 'Fiumicino', code: 'FCO' },
-                { city: 'Madrid', country: 'Spain', name: 'Barajas', code: 'MAD' },
-                { city: 'Vienna', country: 'Austria', name: 'Schwechat', code: 'VIE' },
-                { city: 'Krakow', country: 'Poland', name: 'John Paul II', code: 'KRK' }
-            ];
-
-            const dropdown = document.getElementById('autocompleteDropdown');
-            const priceSlider = document.getElementById('priceSlider');
-            const priceDisplay = document.getElementById('priceDisplay');
-            const searchBtn = document.getElementById('searchBtn');
-            const resultsTitle = document.getElementById('resultsTitle');
-            const dateInfo = document.getElementById('dateInfo');
-            const cardsGrid = document.getElementById('cardsGrid');
-
-            const state = {
-                selectedCode: 'BER',
-                selectedCity: 'Berlin',
-                maxPrice: 120,
-                loading: false,
-            };
-
-            const mockFlights = [
-                { iata: 'LON', city: 'London', country: 'United Kingdom', price: 67, airline: 'Ryanair', outbound: 'Fri, 06:30', outboundArr: '08:15', return: 'Sun, 20:45', returnArr: '22:30', hot: true },
-                { iata: 'PAR', city: 'Paris', country: 'France', price: 89, airline: 'EasyJet', outbound: 'Fri, 07:15', outboundArr: '09:00', return: 'Sun, 19:30', returnArr: '21:15', hot: false },
-                { iata: 'AMS', city: 'Amsterdam', country: 'Netherlands', price: 112, airline: 'KLM', outbound: 'Fri, 08:00', outboundArr: '09:45', return: 'Sun, 18:15', returnArr: '20:00', hot: false },
-                { iata: 'MAD', city: 'Madrid', country: 'Spain', price: 54, airline: 'Vueling', outbound: 'Fri, 05:45', outboundArr: '08:30', return: 'Sun, 21:00', returnArr: '23:45', hot: true },
-                { iata: 'PRG', city: 'Prague', country: 'Czech Republic', price: 78, airline: 'Eurowings', outbound: 'Fri, 09:30', outboundArr: '10:45', return: 'Sun, 17:20', returnArr: '18:35', hot: false },
-                { iata: 'FCO', city: 'Rome', country: 'Italy', price: 95, airline: 'Wizz Air', outbound: 'Fri, 06:00', outboundArr: '08:10', return: 'Sun, 20:30', returnArr: '22:40', hot: false },
-            ];
-
-            originInput.addEventListener('input', function() {
-                const query = this.value.toLowerCase().trim();
-                if (!query) {
-                    dropdown.classList.remove('active');
-                    return;
-                }
-
-                const matches = airportsDatabase.filter(item => 
-                    item.city.toLowerCase().includes(query) || 
-                    item.code.toLowerCase().includes(query) ||
-                    item.country.toLowerCase().includes(query)
-                );
-
-                if (matches.length > 0) {
-                    dropdown.innerHTML = matches.map(item => `
-                        <div class="autocomplete-item" data-code="${item.code}" data-city="${item.city}">
-                            <span class="city-name">${item.city}, ${item.country}</span>
-                            <span class="iata-code">${item.code}</span>
-                        </div>
-                    `).join('');
-                    dropdown.classList.add('active');
-                } else {
-                    dropdown.classList.remove('active');
-                }
-            });
-
-            dropdown.addEventListener('click', function(e) {
-                const item = e.target.closest('.autocomplete-item');
-                if (item) {
-                    state.selectedCode = item.dataset.code;
-                    state.selectedCity = item.dataset.city;
-                    originInput.value = `${state.selectedCity} (${state.selectedCode})`;
-                    dropdown.classList.remove('active');
-                }
-            });
-
-            document.addEventListener('click', function(e) {
-                if (!originInput.contains(e.target) && !dropdown.contains(e.target)) {
-                    dropdown.classList.remove('active');
-                }
-            });
-
-            function renderFlights(flights) {
-                if (!flights || flights.length === 0) {
-                    cardsGrid.innerHTML = `
-                        <div class="empty-state">
-                            <h3>${t.noFlights}</h3>
-                            <p>${t.noFlightsDesc}</p>
-                        </div>
-                    `;
-                    return;
-                }
-
-                let html = '';
-                flights.forEach((f) => {
-                    const hotBadge = f.hot ? `<div class="hot-deal">${t.hotDeal}</div>` : '';
-                    html += `
-                        <div class="flight-card">
-                            ${hotBadge}
-                            <div class="card-top">
-                                <div class="destination-code">${f.iata}</div>
-                                <div class="destination-info">
-                                    <div class="destination-city">${f.city}</div>
-                                    <div class="destination-country">${f.country}</div>
-                                </div>
-                            </div>
-                            <div class="card-timings">
-                                <div class="timing-row">
-                                    <span class="timing-label">${t.outbound}</span>
-                                    <span class="timing-value">${f.outbound} &rarr; ${f.outboundArr}</span>
-                                </div>
-                                <div class="timing-row">
-                                    <span class="timing-label">${t.return}</span>
-                                    <span class="timing-value">${f.return} &rarr; ${f.returnArr}</span>
-                                </div>
-                            </div>
-                            <div class="card-bottom">
-                                <span class="airline-name">${f.airline}</span>
-                                <span class="price-tag">€${f.price} <span class="roundtrip">${t.roundTrip}</span></span>
-                            </div>
-                            <button class="book-button" onclick="alert('Redirecting to booking...')">
-                                ${t.bookBtn}
-                            </button>
-                        </div>
-                    `;
-                });
-                cardsGrid.innerHTML = html;
-            }
-
-            function updatePriceDisplay(val) {
-                state.maxPrice = val;
-                priceDisplay.innerHTML = `€${val} <span>${t.roundTrip}</span>`;
-            }
-
-            function performSearch() {
-                if (state.loading) return;
-                state.loading = true;
-                searchBtn.disabled = true;
-                
-                searchBtn.innerHTML = `<div class="spinner"></div>`;
-
-                state.maxPrice = parseInt(priceSlider.value);
-
-                setTimeout(() => {
-                    const filtered = mockFlights.filter(f => f.price <= state.maxPrice);
-                    filtered.sort((a, b) => a.price - b.price);
-
-                    resultsTitle.textContent = t.resultsTitle;
-                    dateInfo.textContent = `2026-09-11 → 2026-09-13 · ${state.selectedCode}`;
-
-                    renderFlights(filtered);
-
-                    state.loading = false;
-                    searchBtn.disabled = false;
-                    searchBtn.innerHTML = `<span id="searchBtnText">${t.findBtn}</span> <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>`;
-                }, 600);
-            }
-
-            priceSlider.addEventListener('input', function() {
-                updatePriceDisplay(parseInt(this.value));
-            });
-
-            searchBtn.addEventListener('click', performSearch);
-
-            updatePriceDisplay(120);
-            renderFlights(mockFlights.filter(f => f.price <= state.maxPrice));
-        })();
-    </script>
 </body>
 </html>
